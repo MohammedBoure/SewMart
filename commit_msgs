@@ -2,3 +2,7 @@
 -----
 
 feat: add PWA support with manifest and service worker
+
+-----
+
+revert(css): restore previous CSS version due to recent issues
