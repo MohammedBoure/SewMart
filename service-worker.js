@@ -9,7 +9,7 @@ const urlsToCache = [
   '/reports.html',
   '/settings.html',
   '/manifest.json',
-  '/offline.html', // يمكن إزالتها إذا لم تكن ضرورية
+  '/offline.html',
   '/css/dashboard.css',
   '/css/sales.css',
   '/css/styles.css',
@@ -35,10 +35,13 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  console.log('[Service Worker] Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('[SewMart SW] Caching app shell...');
+      console.log('[Service Worker] Caching files:', urlsToCache);
       return cache.addAll(urlsToCache);
+    }).catch(err => {
+      console.error('[Service Worker] Cache failed:', err);
     })
   );
   self.skipWaiting();
@@ -51,7 +54,7 @@ self.addEventListener('activate', event => {
       Promise.all(
         cacheNames.map(cacheName => {
           if (!cacheWhitelist.includes(cacheName)) {
-            console.log('[SewMart SW] Deleting old cache:', cacheName);
+            console.log('[Service Worker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -62,26 +65,28 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // تجاهل الطلبات غير المتعلقة بـ GET (مثل طلبات المزامنة)
   if (event.request.method !== 'GET') {
     return;
   }
-
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       if (cachedResponse) {
+        console.log('[Service Worker] Serving from cache:', event.request.url);
         return cachedResponse;
       }
-      // إذا لم يتم العثور على المورد في التخزين، قم بإرجاع index.html للتنقل
-      if (event.request.mode === 'navigate') {
-        return caches.match('/index.html');
-      }
-      // إرجاع استجابة افتراضية للموارد غير الموجودة
-      return new Response('المورد غير متاح في التخزين المؤقت', {
-        status: 404,
-        statusText: 'Not Found'
+      // حاول جلب المورد من الشبكة
+      return fetch(event.request).catch(error => {
+        console.log('[Service Worker] Network failed:', error);
+        // إرجاع offline.html للطلبات من نوع navigate
+        if (event.request.mode === 'navigate') {
+          return caches.match('/offline.html');
+        }
+        // إرجاع استجابة خطأ للموارد الأخرى
+        return new Response('المورد غير متاح ولا يوجد اتصال بالشبكة', {
+          status: 503,
+          statusText: 'Service Unavailable'
+        });
       });
     })
   );
 });
-

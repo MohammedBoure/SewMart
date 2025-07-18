@@ -42,3 +42,7 @@ fix(service-worker): ensure full offline functionality by serving cached resourc
     -Updated fetch event to return index.html for navigation requests and ignore non-GET requests.
     -Incremented CACHE_NAME to sewmart-cache-v3 to force cache refresh.
     -Removed sync-related logic (queueRequest, push, notificationclick) as the app is fully offline.
+
+-----
+
+test

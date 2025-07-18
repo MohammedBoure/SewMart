@@ -47,3 +47,12 @@ export async function initializeApp() {
 document.addEventListener('DOMContentLoaded', async () => {
     await initializeApp();
 });
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+            .then(reg => console.log('Service Worker registered:', reg))
+            .catch(err => console.error('Service Worker registration failed:', err));
+    });
+}
