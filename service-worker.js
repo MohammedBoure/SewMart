@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sewmart-cache-v2';
+const CACHE_NAME = 'sewmart-cache-v3';
 
 const urlsToCache = [
   '/',
@@ -9,7 +9,7 @@ const urlsToCache = [
   '/reports.html',
   '/settings.html',
   '/manifest.json',
-  '/offline.html',
+  '/offline.html', // يمكن إزالتها إذا لم تكن ضرورية
   '/css/dashboard.css',
   '/css/sales.css',
   '/css/styles.css',
@@ -62,76 +62,26 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // تجاهل الطلبات غير المتعلقة بـ GET (مثل طلبات المزامنة)
   if (event.request.method !== 'GET') {
-    if (event.request.url.includes('/api/sync')) {
-      event.respondWith(
-        queueRequest(event.request).then(() => new Response('Request queued for sync'))
-      );
-    }
     return;
   }
 
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request).then(networkResponse => {
-        if (
-          !networkResponse ||
-          networkResponse.status !== 200 ||
-          event.request.url.startsWith('chrome-extension://')
-        ) {
-          return networkResponse;
-        }
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        });
-      }).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('/offline.html');
-        }
-        return new Response('غير متصل بالإنترنت', {
-          status: 503,
-          statusText: 'Service Unavailable'
-        });
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      // إذا لم يتم العثور على المورد في التخزين، قم بإرجاع index.html للتنقل
+      if (event.request.mode === 'navigate') {
+        return caches.match('/index.html');
+      }
+      // إرجاع استجابة افتراضية للموارد غير الموجودة
+      return new Response('المورد غير متاح في التخزين المؤقت', {
+        status: 404,
+        statusText: 'Not Found'
       });
     })
   );
 });
 
-// Queue POST requests for sync
-async function queueRequest(request) {
-  const db = await openIndexedDB();
-  const data = await request.clone().json();
-  db.put('syncQueue', { url: request.url, data, timestamp: Date.now() });
-}
-
-// Placeholder for IndexedDB (implement as needed)
-async function openIndexedDB() {
-  // Implement IndexedDB logic to store sync queue
-  // Return a mock promise for now
-  return {
-    put: (store, data) => console.log('Queued:', data)
-  };
-}
-
-self.addEventListener('push', event => {
-  const data = event.data ? event.data.json() : {
-    title: 'SewMart',
-    body: '📢 تحديث جديد متاح!'
-  };
-  event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/icon-192x192.png'
-    })
-  );
-});
-
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow('/index.html')
-  );
-});

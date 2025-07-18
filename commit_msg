@@ -1,6 +1,5 @@
-feat(pwa): enhance offline support with updated service worker and manifest
-
-- Fixed and improved service-worker.js to cache essential assets for full offline usage
-- Updated manifest.json with better metadata, icons, and display options
-- Added Tailwind, lucide, SQL.js, and offline.html to the cache list
-- Ensured proper fallback to offline.html when offline
+fix(service-worker): ensure full offline functionality by serving cached resources only
+    -Modified service-worker.js to serve cached resources exclusively, removing network fetch attempts for complete offline support.
+    -Updated fetch event to return index.html for navigation requests and ignore non-GET requests.
+    -Incremented CACHE_NAME to sewmart-cache-v3 to force cache refresh.
+    -Removed sync-related logic (queueRequest, push, notificationclick) as the app is fully offline.
