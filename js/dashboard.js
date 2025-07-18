@@ -1,5 +1,13 @@
 import { initializeApp } from './script.js';
 
+initSqlJs({
+  locateFile: file => `libs/sql.js/${file}`
+}).then(SQL => {
+  // استخدم SQL.Database() هنا
+  console.log("SQLite initialized successfully");
+});
+
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initializeApp();

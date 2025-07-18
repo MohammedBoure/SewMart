@@ -1,7 +1,7 @@
-import ProductsDB from './database/ProductsDB.js';
-import SalesDB from './database/SalesDB.js';
-import CategoriesDB from './database/CategoriesDB.js';
-import SettingsDB from './database/SettingsDB.js';
+import ProductsDB from '../database/ProductsDB.js';
+import SalesDB from '../database/SalesDB.js';
+import CategoriesDB from '../database/CategoriesDB.js';
+import SettingsDB from '../database/SettingsDB.js';
 
 export async function initializeApp() {
     try {

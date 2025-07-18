@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محل الخياطة - المبيعات</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js" defer></script>
-    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js" defer></script>
-    <script type="module" src="sales.js"></script>
+    <link rel="icon" href="/icons/icon-192x192.png" type="image/png" sizes="192x192">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/sales.css">
+    <script src="libs/sql.js/sql-wasm.js"></script>
+    <script src="libs/lucide/lucide.min.js"></script>
+    <script type="module" src="js/config.js"></script>
+    <script type="module" src="js/sales.js"></script>
 </head>
 <body>
+    <header class="date-header">
+        <span>18 يوليو 2025</span>
+    </header>
     <div class="app-container">
         <aside class="sidebar">
             <div class="sidebar-header">
@@ -19,12 +24,12 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="index.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="home"></i> الرئيسية</a></li>
-                    <li><a href="products.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="package"></i> إدارة السلع</a></li>
-                    <li><a href="sales.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-white bg-blue-500 shadow-md"><i data-lucide="shopping-cart"></i> المبيعات</a></li>
-                    <li><a href="reports.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="bar-chart-2"></i> التقارير</a></li>
-                    <li><a href="categories.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="tag"></i> الفئات</a></li>
-                    <li><a href="settings.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="settings"></i> الإعدادات</a></li>
+                    <li><a href="index.html" class="nav-button"><i data-lucide="home"></i> الرئيسية</a></li>
+                    <li><a href="products.html" class="nav-button"><i data-lucide="package"></i> إدارة السلع</a></li>
+                    <li><a href="sales.html" class="nav-button active"><i data-lucide="shopping-cart"></i> المبيعات</a></li>
+                    <li><a href="reports.html" class="nav-button"><i data-lucide="bar-chart-2"></i> التقارير</a></li>
+                    <li><a href="categories.html" class="nav-button"><i data-lucide="tag"></i> الفئات</a></li>
+                    <li><a href="settings.html" class="nav-button"><i data-lucide="settings"></i> الإعدادات</a></li>
                 </ul>
             </nav>
         </aside>
@@ -118,7 +123,6 @@
         </main>
     </div>
     <script>
-        // Ensure sql.js and lucide are loaded
         window.addEventListener('load', () => {
             if (typeof window.initSqlJs === 'undefined') {
                 console.error('sql.js failed to load. Please check the CDN or network connection.');

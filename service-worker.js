@@ -8,10 +8,8 @@ const urlsToCache = [
   '/categories.html',
   '/reports.html',
   '/settings.html',
-
   '/manifest.json',
   '/styles.css',
-
   '/products.js',
   '/sales.js',
   '/categories.js',
@@ -20,17 +18,15 @@ const urlsToCache = [
   '/dashboard.js',
   '/script.js',
   '/service-worker.js',
-
   '/database/Database.js',
   '/database/ProductsDB.js',
   '/database/SalesDB.js',
   '/database/CategoriesDB.js',
   '/database/SettingsDB.js',
-
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-
-  '/offline.html'
+  '/offline.html',
+  '/lib/lucide.min.js' // إضافة مكتبة Lucide المحلية
 ];
 
 // ✅ تثبيت Service Worker وتخزين الملفات في الكاش
@@ -92,7 +88,7 @@ self.addEventListener('fetch', event => {
         if (event.request.mode === 'navigate') {
           return caches.match('/offline.html');
         }
-        return new Response('Offline', {
+        return new Response('غير متصل بالإنترنت', {
           status: 503,
           statusText: 'Service Unavailable'
         });

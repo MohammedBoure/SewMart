@@ -1,1 +1,7 @@
-revert(css): restore previous CSS version due to recent issues
+feat(structure): organize project structure and use local libraries
+
+- Moved all external libraries (sql.js, lucide, tailwindcss) to local `libs/` directory
+- Updated script paths in HTML to use local files
+- Replaced icon element with an image for local logo (icon-512x512.png)
+- Added inline CSS for logo styling and sidebar layout
+- Improved HTML structure and removed redundant tags

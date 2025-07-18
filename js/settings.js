@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         alert('فشل في استعادة البيانات!');
                     }
                 }
-            };
+            };  
             input.click();
         });
 
