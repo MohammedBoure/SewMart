@@ -1,7 +1,6 @@
 const CACHE_NAME = 'sewmart-cache-v3';
 
 const urlsToCache = [
-  '/',
   '/index.html',
   '/products.html',
   '/sales.html',
@@ -31,17 +30,23 @@ const urlsToCache = [
   '/libs/lucide/lucide.min.js',
   '/libs/sql.js/sql-wasm.js',
   '/libs/sql.js/sql-wasm.wasm',
-  '/libs/tailwind.css',
 ];
 
 self.addEventListener('install', event => {
   console.log('[Service Worker] Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
+    caches.open(CACHE_NAME).then(async cache => {
       console.log('[Service Worker] Caching files:', urlsToCache);
-      return cache.addAll(urlsToCache);
+      for (const url of urlsToCache) {
+        try {
+          await cache.add(url);
+          console.log(`[Service Worker] Cached: ${url}`);
+        } catch (err) {
+          console.warn(`[Service Worker] Failed to cache ${url}:`, err);
+        }
+      }
     }).catch(err => {
-      console.error('[Service Worker] Cache failed:', err);
+      console.error('[Service Worker] Cache initialization failed:', err);
     })
   );
   self.skipWaiting();

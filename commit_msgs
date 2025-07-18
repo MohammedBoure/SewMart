@@ -46,3 +46,6 @@ fix(service-worker): ensure full offline functionality by serving cached resourc
 -----
 
 test
+-----
+
+remove '/tailwind' and '/' from urlsToCache
