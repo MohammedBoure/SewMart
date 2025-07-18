@@ -1,0 +1,15 @@
+.date-footer {
+    position: fixed;          /* يجعل العنصر ثابت */
+    bottom: 0;                /* يضعه أسفل الشاشة */
+    left: 0;                  /* يبدأ من اليسار */
+    width: 100%;              /* يغطي العرض الكامل */
+    background-color: #f0f0f0;
+    color: #333;
+    text-align: center;
+    padding: 10px;
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    z-index: 9999;           /* يجعل الشريط فوق كل العناصر الأخرى */
+}
+

@@ -1,26 +1,15 @@
-/* Inline CSS for elements not covered in styles.css and for the date header */
-        header.date-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            text-align: center;
-            font-family: var(--font-family);
-            font-size: 1.1rem;
-            font-weight: 500;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .table-container {
-            background-color: var(--card-bg-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            padding-top: 1rem;
-        }
+.table-container {
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+.main-content {
+    padding-bottom: 60px;
+}
