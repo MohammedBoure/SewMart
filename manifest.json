@@ -1,14 +1,14 @@
 {
-  "name": "SewMart",
+  "name": "SewMart - إدارة محل خياطة",
   "short_name": "SewMart",
-  "description": "تطبيق إدارة محل خياطة لبيع القماش والأدوات مع دعم كامل بدون إنترنت.",
+  "description": "تطبيق متكامل لإدارة محل خياطة وبيع القماش والأدوات. يعمل بدون إنترنت (PWA).",
   "start_url": "/index.html",
-  "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay"],
-  "background_color": "#ffffff",
-  "theme_color": "#ff69b4", 
   "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "window-controls-overlay"],
   "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ff69b4",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
@@ -35,5 +35,21 @@
       "purpose": "maskable"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshots/home.png",
+      "type": "image/png",
+      "sizes": "540x960",
+      "label": "الرئيسية"
+    },
+    {
+      "src": "/screenshots/products.png",
+      "type": "image/png",
+      "sizes": "540x960",
+      "label": "قائمة المنتجات"
+    }
+  ],
+  "lang": "ar",
+  "dir": "rtl",
   "prefer_related_applications": false
 }

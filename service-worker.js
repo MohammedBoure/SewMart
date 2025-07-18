@@ -9,24 +9,39 @@ const urlsToCache = [
   '/reports.html',
   '/settings.html',
   '/manifest.json',
-  '/styles.css',
-  '/products.js',
-  '/sales.js',
-  '/categories.js',
-  '/reports.js',
-  '/settings.js',
-  '/dashboard.js',
-  '/script.js',
-  '/service-worker.js',
+  '/offline.html',
+
+  // CSS
+  '/css/dashboard.css',
+  '/css/sales.css',
+  '/css/styles.css',
+
+  // JS
+  '/js/config.js',
+  '/js/reports.js',
+  '/js/categories.js',
+  '/js/products.js',
+  '/js/sales.js',
+  '/js/dashboard.js',
+  '/js/script.js',
+  '/js/settings.js',
+
+  // Database
   '/database/Database.js',
   '/database/ProductsDB.js',
   '/database/SalesDB.js',
   '/database/CategoriesDB.js',
   '/database/SettingsDB.js',
+
+  // Icons
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-  '/offline.html',
-  '/lib/lucide.min.js' // إضافة مكتبة Lucide المحلية
+
+  // Libs
+  '/libs/lucide/lucide.min.js',
+  '/libs/sql.js/sql-wasm.js',
+  '/libs/sql.js/sql-wasm.wasm',
+  '/libs/tailwind.css'
 ];
 
 // ✅ تثبيت Service Worker وتخزين الملفات في الكاش
