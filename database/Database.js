@@ -14,25 +14,22 @@ class Database {
      */
     async initialize() {
         try {
-            this.SQL = await initSqlJs({ locateFile: () => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.wasm' });
-            
+            this.SQL = await initSqlJs({ locateFile: () => '/libs/sql.js/sql-wasm.wasm' });
             const savedDb = await this._loadDBFromIndexedDB();
-
             if (savedDb) {
                 console.log("Loading database from IndexedDB...");
                 this.db = new this.SQL.Database(savedDb);
             } else {
                 console.log("Creating new database...");
                 this.db = new this.SQL.Database();
-                this.createTables(); // هذه الدالة ستضيف البيانات الأولية
-                await this.save(); // حفظ الحالة الأولية الجديدة
+                this.createTables();
+                await this.save();
             }
         } catch (error) {
             console.error('Database initialization failed:', error);
             throw error;
         }
     }
-
     /**
      * دالة خاصة لتحميل قاعدة البيانات من IndexedDB.
      * @returns {Promise<Uint8Array|null>}

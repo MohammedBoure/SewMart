@@ -25,3 +25,12 @@ feat(pwa): enhance offline support with updated service worker and manifest
 - Updated manifest.json with better metadata, icons, and display options
 - Added Tailwind, lucide, SQL.js, and offline.html to the cache list
 - Ensured proper fallback to offline.html when offline
+
+-----
+
+feat(pwa): enhance offline support with updated service worker and manifest
+
+- Fixed and improved service-worker.js to cache essential assets for full offline usage
+- Updated manifest.json with better metadata, icons, and display options
+- Added Tailwind, lucide, SQL.js, and offline.html to the cache list
+- Ensured proper fallback to offline.html when offline

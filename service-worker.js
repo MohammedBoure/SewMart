@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sewmart-cache-v1';
+const CACHE_NAME = 'sewmart-cache-v2';
 
 const urlsToCache = [
   '/',
@@ -10,13 +10,9 @@ const urlsToCache = [
   '/settings.html',
   '/manifest.json',
   '/offline.html',
-
-  // CSS
   '/css/dashboard.css',
   '/css/sales.css',
   '/css/styles.css',
-
-  // JS
   '/js/config.js',
   '/js/reports.js',
   '/js/categories.js',
@@ -25,26 +21,19 @@ const urlsToCache = [
   '/js/dashboard.js',
   '/js/script.js',
   '/js/settings.js',
-
-  // Database
   '/database/Database.js',
   '/database/ProductsDB.js',
   '/database/SalesDB.js',
   '/database/CategoriesDB.js',
   '/database/SettingsDB.js',
-
-  // Icons
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
-
-  // Libs
   '/libs/lucide/lucide.min.js',
   '/libs/sql.js/sql-wasm.js',
   '/libs/sql.js/sql-wasm.wasm',
-  '/libs/tailwind.css'
+  '/libs/tailwind.css',
 ];
 
-// ✅ تثبيت Service Worker وتخزين الملفات في الكاش
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -52,10 +41,9 @@ self.addEventListener('install', event => {
       return cache.addAll(urlsToCache);
     })
   );
-  self.skipWaiting(); // تفعيل الفورًا
+  self.skipWaiting();
 });
 
-// ✅ تنشيط SW وتنظيف الكاشات القديمة
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -73,18 +61,20 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// ✅ التعامل مع طلبات المستخدم (fetch)
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+  if (event.request.method !== 'GET') {
+    if (event.request.url.includes('/api/sync')) {
+      event.respondWith(
+        queueRequest(event.request).then(() => new Response('Request queued for sync'))
+      );
+    }
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
-      // إذا الملف موجود في الكاش، نرجعه مباشرة
       if (cachedResponse) return cachedResponse;
-
-      // إذا لم يكن في الكاش، نحاول تحميله من الشبكة
       return fetch(event.request).then(networkResponse => {
-        // فقط نخزّن الملفات GET التي نجحت
         if (
           !networkResponse ||
           networkResponse.status !== 200 ||
@@ -92,14 +82,11 @@ self.addEventListener('fetch', event => {
         ) {
           return networkResponse;
         }
-
-        // نخزن الملف الجديد في الكاش
         return caches.open(CACHE_NAME).then(cache => {
           cache.put(event.request, networkResponse.clone());
           return networkResponse;
         });
       }).catch(() => {
-        // إذا فشل التحميل والشبكة غير متاحة
         if (event.request.mode === 'navigate') {
           return caches.match('/offline.html');
         }
@@ -112,13 +99,27 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// ✅ إشعارات الدفع (اختياري)
+// Queue POST requests for sync
+async function queueRequest(request) {
+  const db = await openIndexedDB();
+  const data = await request.clone().json();
+  db.put('syncQueue', { url: request.url, data, timestamp: Date.now() });
+}
+
+// Placeholder for IndexedDB (implement as needed)
+async function openIndexedDB() {
+  // Implement IndexedDB logic to store sync queue
+  // Return a mock promise for now
+  return {
+    put: (store, data) => console.log('Queued:', data)
+  };
+}
+
 self.addEventListener('push', event => {
   const data = event.data ? event.data.json() : {
     title: 'SewMart',
     body: '📢 تحديث جديد متاح!'
   };
-
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
@@ -128,7 +129,6 @@ self.addEventListener('push', event => {
   );
 });
 
-// ✅ عند الضغط على الإشعار
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(

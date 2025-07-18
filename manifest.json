@@ -35,20 +35,6 @@
       "purpose": "maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/home.png",
-      "type": "image/png",
-      "sizes": "540x960",
-      "label": "الرئيسية"
-    },
-    {
-      "src": "/screenshots/products.png",
-      "type": "image/png",
-      "sizes": "540x960",
-      "label": "قائمة المنتجات"
-    }
-  ],
   "lang": "ar",
   "dir": "rtl",
   "prefer_related_applications": false
