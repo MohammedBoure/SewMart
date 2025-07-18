@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محل الخياطة - المبيعات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js" defer></script>
+    <script type="module" src="sales.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="logo-icon" data-lucide="stitch"></i>
+                <h1>محل الخياطة</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="home"></i> الرئيسية</a></li>
+                    <li><a href="products.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="package"></i> إدارة السلع</a></li>
+                    <li><a href="sales.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-white bg-blue-500 shadow-md"><i data-lucide="shopping-cart"></i> المبيعات</a></li>
+                    <li><a href="reports.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="bar-chart-2"></i> التقارير</a></li>
+                    <li><a href="categories.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="tag"></i> الفئات</a></li>
+                    <li><a href="settings.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="settings"></i> الإعدادات</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <section class="view" id="sales">
+                <div class="view-header">
+                    <h1>سجل المبيعات</h1>
+                    <button id="open-sale-modal-sales" class="btn btn-primary"><i data-lucide="plus"></i> بيع جديد</button>
+                </div>
+                <div class="filter-bar">
+                    <div class="form-group">
+                        <label for="start-date">من تاريخ</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="end-date">إلى تاريخ</label>
+                        <input type="date" id="end-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="per-page">عدد لكل صفحة</label>
+                        <select id="per-page">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100" selected>100</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>رقم العملية</th>
+                                <th>التاريخ</th>
+                                <th>إجمالي الربح</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-history-body">
+                            <tr><td colspan="4" style="text-align:center;">جارٍ تحميل المبيعات...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal" id="add-sale-modal">
+                    <div class="modal-content modal-lg">
+                        <h2>عملية بيع جديدة</h2>
+                        <div class="search-bar">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="sale-product-search" placeholder="ابحث عن منتج...">
+                            <div class="search-results-list" id="sale-search-results"></div>
+                        </div>
+                        <div class="sale-cart">
+                            <div class="sale-cart-header">
+                                <span>المنتج</span>
+                                <span>الكمية</span>
+                                <span>السعر</span>
+                                <span>الإجمالي</span>
+                                <span></span>
+                            </div>
+                            <div class="sale-cart-items" id="sale-cart-items"></div>
+                        </div>
+                        <div class="invoice-summary">
+                            <div class="summary-line">
+                                <span>إجمالي الربح</span>
+                                <strong id="summary-profit">0.00 دينار</strong>
+                            </div>
+                            <div class="summary-line total">
+                                <span>المبلغ الإجمالي</span>
+                                <strong id="summary-total">0.00 دينار</strong>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary close-modal">إلغاء</button>
+                            <button type="button" id="complete-sale-btn" class="btn btn-primary">إتمام البيع</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal sale-details-modal" id="sale-details-modal">
+                    <div class="sale-details-modal-content">
+                        <div class="sale-details-header">
+                            <h2>تفاصيل المبيعة</h2>
+                            <button class="close-modal" aria-label="Close modal"><i data-lucide="x"></i></button>
+                        </div>
+                        <div class="sale-details-body" id="sale-details-content"></div>
+                        <div class="sale-details-footer">
+                            <button type="button" class="btn btn-secondary close-modal">إغلاق</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Ensure sql.js and lucide are loaded
+        window.addEventListener('load', () => {
+            if (typeof window.initSqlJs === 'undefined') {
+                console.error('sql.js failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة قاعدة البيانات. يرجى التحقق من الاتصال بالإنترنت وإعادة تحميل الصفحة.');
+            }
+            if (typeof window.lucide === 'undefined') {
+                console.error('lucide failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة الأيقونات. يرجى إعادة تحميل الصفحة.');
+            }
+        });
+    </script>
+</body>
+</html>

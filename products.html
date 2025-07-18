@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محل الخياطة - إدارة السلع</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js" defer></script>
+    <script type="module" src="products.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="logo-icon" data-lucide="stitch"></i>
+                <h1>محل الخياطة</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="home"></i> الرئيسية</a></li>
+                    <li><a href="products.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-white bg-blue-500 shadow-md"><i data-lucide="package"></i> إدارة السلع</a></li>
+                    <li><a href="sales.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="shopping-cart"></i> المبيعات</a></li>
+                    <li><a href="reports.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="bar-chart-2"></i> التقارير</a></li>
+                    <li><a href="categories.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="tag"></i> الفئات</a></li>
+                    <li><a href="settings.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="settings"></i> الإعدادات</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <section class="view" id="products">
+                <div class="view-header">
+                    <h1>إدارة السلع</h1>
+                    <button id="open-product-modal" class="btn btn-primary"><i data-lucide="plus"></i> إضافة سلعة</button>
+                </div>
+                <div class="search-bar">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="product-search-input" placeholder="ابحث عن سلعة...">
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>المنتج</th>
+                                <th>الفئة</th>
+                                <th>سعر الشراء</th>
+                                <th>سعر البيع</th>
+                                <th>الكمية</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <tr><td colspan="6" style="text-align:center;">جارٍ تحميل المنتجات...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal" id="add-product-modal">
+                    <div class="modal-content">
+                        <h2>إضافة سلعة جديدة</h2>
+                        <form id="add-product-form" class="form">
+                            <div class="form-group">
+                                <label for="product-name">اسم السلعة</label>
+                                <input type="text" id="product-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-category">الفئة</label>
+                                <select id="product-category" required>
+                                    <option value="">اختر الفئة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-unit">وحدة القياس</label>
+                                <select id="product-unit" required>
+                                    <option value="">اختر الوحدة</option>
+                                    <option value="متر">متر</option>
+                                    <option value="قطعة">قطعة</option>
+                                    <option value="بكرة">بكرة</option>
+                                    <option value="علبة">علبة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="buy-price">سعر الشراء</label>
+                                <input type="number" step="0.01" id="buy-price" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sell-price">سعر البيع</label>
+                                <input type="number" step="0.01" id="sell-price" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">الكمية الحالية</label>
+                                <input type="number" id="quantity" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="min-quantity">الحد الأدنى للمخزون</label>
+                                <input type="number" id="min-quantity" min="0" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary close-modal">إلغاء</button>
+                                <button type="submit" class="btn btn-primary">إضافة السلعة</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal" id="edit-product-modal">
+                    <div class="modal-content">
+                        <h2>تعديل السلعة</h2>
+                        <form id="edit-product-form" class="form">
+                            <input type="hidden" id="edit-product-id">
+                            <div class="form-group">
+                                <label for="edit-product-name">اسم السلعة</label>
+                                <input type="text" id="edit-product-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-product-category">الفئة</label>
+                                <select id="edit-product-category" required>
+                                    <option value="">اختر الفئة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-product-unit">وحدة القياس</label>
+                                <select id="edit-product-unit" required>
+                                    <option value="">اختر الوحدة</option>
+                                    <option value="متر">متر</option>
+                                    <option value="قطعة">قطعة</option>
+                                    <option value="بكرة">بكرة</option>
+                                    <option value="علبة">علبة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-buy-price">سعر الشراء</label>
+                                <input type="number" step="0.01" id="edit-buy-price" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-sell-price">سعر البيع</label>
+                                <input type="number" step="0.01" id="edit-sell-price" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-quantity">الكمية الحالية</label>
+                                <input type="number" id="edit-quantity" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit-min-quantity">الحد الأدنى للمخزون</label>
+                                <input type="number" id="edit-min-quantity" min="0" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary close-modal">إلغاء</button>
+                                <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Ensure sql.js and lucide are loaded
+        window.addEventListener('load', () => {
+            if (typeof window.initSqlJs === 'undefined') {
+                console.error('sql.js failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة قاعدة البيانات. يرجى التحقق من الاتصال بالإنترنت وإعادة تحميل الصفحة.');
+            }
+            if (typeof window.lucide === 'undefined') {
+                console.error('lucide failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة الأيقونات. يرجى إعادة تحميل الصفحة.');
+            }
+        });
+    </script>
+</body>
+</html>

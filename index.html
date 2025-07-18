@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محل الخياطة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+      <link rel="icon" href="/icons/icon-192x192.png" type="image/png" sizes="192x192">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+    <script type="module" src="dashboard.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="logo-icon" data-lucide="stitch"></i>
+                <h1>محل الخياطة</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-white bg-blue-500 shadow-md"><i data-lucide="home"></i> الرئيسية</a></li>
+                    <li><a href="products.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="package"></i> إدارة السلع</a></li>
+                    <li><a href="sales.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="shopping-cart"></i> المبيعات</a></li>
+                    <li><a href="reports.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="bar-chart-2"></i> التقارير</a></li>
+                    <li><a href="categories.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="tag"></i> الفئات</a></li>
+                    <li><a href="settings.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="settings"></i> الإعدادات</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <section class="view" id="dashboard">
+                <div class="view-header">
+                    <h1>لوحة التحكم</h1>
+                    <a href="sales.html" class="btn btn-primary"><i data-lucide="plus"></i> بيع جديد</a>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card border-blue-500">
+                        <div class="stat-info">
+                            <p>إجمالي أنواع السلع</p>
+                            <h2 id="dashboard-total-products">0</h2>
+                        </div>
+                        <i class="stat-icon bg-blue-500" data-lucide="package"></i>
+                    </div>
+                    <div class="stat-card border-green-500">
+                        <div class="stat-info">
+                            <p>أرباح هذا الشهر</p>
+                            <h2 id="dashboard-monthly-profit">0 دينار</h2>
+                        </div>
+                        <i class="stat-icon bg-green-500" data-lucide="dollar-sign"></i>
+                    </div>
+                    <div class="stat-card border-purple-500">
+                        <div class="stat-info">
+                            <p>مبيعات اليوم</p>
+                            <h2 id="dashboard-today-sales">0 عمليات</h2>
+                        </div>
+                        <i class="stat-icon bg-purple-500" data-lucide="shopping-cart"></i>
+                    </div>
+                    <div class="stat-card border-orange-500">
+                        <div class="stat-info">
+                            <p>منتجات قاربت النفاد</p>
+                            <h2 id="dashboard-low-stock">0 منتجات</h2>
+                        </div>
+                        <i class="stat-icon bg-orange-500" data-lucide="alert-triangle"></i>
+                    </div>
+                    <div class="stat-card border-teal-500">
+                        <div class="stat-info">
+                            <p>رأس المال (سعر الشراء)</p>
+                            <h2 id="dashboard-total-capital-buy">0 دينار</h2>
+                        </div>
+                        <i class="stat-icon bg-teal-500" data-lucide="wallet"></i>
+                    </div>
+                    <div class="stat-card border-teal-500">
+                        <div class="stat-info">
+                            <p>رأس المال (سعر البيع)</p>
+                            <h2 id="dashboard-total-capital-sell">0 ريال</h2>
+                        </div>
+                        <i class="stat-icon bg-teal-500" data-lucide="wallet"></i>
+                    </div>
+                </div>
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>تصفية حسب</h2>
+                        </div>
+                        <div class="filter-bar">
+                            <div class="form-group">
+                                <label for="profit-filter-category">الفئة</label>
+                                <select id="profit-filter-category">
+                                    <option value="">جميع الفئات</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="profit-filter-period">الفترة الزمنية</label>
+                                <select id="profit-filter-period">
+                                    <option value="today">اليوم</option>
+                                    <option value="week">هذا الأسبوع</option>
+                                    <option value="month" selected>هذا الشهر</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>أكثر المنتجات مبيعاً</h2>
+                        </div>
+                        <ul class="list" id="dashboard-top-products">
+                            <li class="py-3"><span>لا توجد مبيعات بعد</span></li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>آخر المبيعات</h2>
+                        </div>
+                        <ul class="list" id="dashboard-recent-sales">
+                            <li class="py-3"><span>لا توجد مبيعات بعد</span></li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>الأرباح حسب الفئة</h2>
+                        </div>
+                        <div id="dashboard-profit-by-category"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Ensure sql.js and lucide are loaded
+        window.addEventListener('load', () => {
+            if (typeof window.initSqlJs === 'undefined') {
+                console.error('sql.js failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة قاعدة البيانات. يرجى التحقق من الاتصال بالإنترنت وإعادة تحميل الصفحة.');
+            }
+            if (typeof window.lucide === 'undefined') {
+                console.error('lucide failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة الأيقونات. يرجى إعادة تحميل الصفحة.');
+            }
+        });
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log('SewMart Service Worker Registered'))
+        .catch(err => console.error('SW registration failed:', err));
+    }
+    </script>
+
+</body>
+</html>

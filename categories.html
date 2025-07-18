@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محل الخياطة - الفئات</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@0.441.0/dist/umd/lucide.min.js" defer></script>
+    <script type="module" src="categories.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="logo-icon" data-lucide="stitch"></i>
+                <h1>محل الخياطة</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="index.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="home"></i> الرئيسية</a></li>
+                    <li><a href="products.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="package"></i> إدارة السلع</a></li>
+                    <li><a href="sales.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="shopping-cart"></i> المبيعات</a></li>
+                    <li><a href="reports.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="bar-chart-2"></i> التقارير</a></li>
+                    <li><a href="categories.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-white bg-blue-500 shadow-md"><i data-lucide="tag"></i> الفئات</a></li>
+                    <li><a href="settings.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="settings"></i> الإعدادات</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <section class="view" id="categories">
+                <div class="view-header">
+                    <h1>الفئات</h1>
+                    <button id="open-category-modal" class="btn btn-primary"><i data-lucide="plus"></i> إضافة فئة</button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>الفئة</th>
+                                <th>عدد المنتجات</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categories-table-body">
+                            <tr><td colspan="3" style="text-align:center;">جارٍ تحميل الفئات...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal" id="add-category-modal">
+                    <div class="modal-content">
+                        <h2>إضافة فئة جديدة</h2>
+                        <form id="add-category-form" class="form">
+                            <div class="form-group">
+                                <label for="category-name">اسم الفئة</label>
+                                <input type="text" id="category-name" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary close-modal">إلغاء</button>
+                                <button type="submit" class="btn btn-primary">إضافة الفئة</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal" id="edit-category-modal">
+                    <div class="modal-content">
+                        <h2>تعديل الفئة</h2>
+                        <form id="edit-category-form" class="form">
+                            <input type="hidden" id="edit-category-old-name">
+                            <div class="form-group">
+                                <label for="edit-category-name">اسم الفئة</label>
+                                <input type="text" id="edit-category-name" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary close-modal">إلغاء</button>
+                                <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Ensure sql.js and lucide are loaded
+        window.addEventListener('load', () => {
+            if (typeof window.initSqlJs === 'undefined') {
+                console.error('sql.js failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة قاعدة البيانات. يرجى التحقق من الاتصال بالإنترنت وإعادة تحميل الصفحة.');
+            }
+            if (typeof window.lucide === 'undefined') {
+                console.error('lucide failed to load. Please check the CDN or network connection.');
+                alert('فشل تحميل مكتبة الأيقونات. يرجى إعادة تحميل الصفحة.');
+            }
+        });
+    </script>
+</body>
+</html>

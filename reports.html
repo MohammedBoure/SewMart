@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير - محل الخياطة</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar bg-white border-l border-gray-200 p-6 flex flex-col">
+            <div class="sidebar-header flex items-center gap-3 mb-10">
+                <span class="logo-icon text-4xl">🧵</span>
+                <h1 class="text-xl font-bold">محل الخياطة</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="flex flex-col gap-2">
+                    <li><a href="index.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="home"></i> الرئيسية</a></li>
+                    <li><a href="products.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="package"></i> إدارة السلع</a></li>
+                    <li><a href="sales.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="shopping-cart"></i> المبيعات</a></li>
+                    <li><a href="reports.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-white bg-blue-500 shadow-md"><i data-lucide="bar-chart-2"></i> التقارير</a></li>
+                    <li><a href="categories.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="tag"></i> الفئات</a></li>
+                    <li><a href="settings.html" class="nav-button flex items-center gap-4 p-3 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900"><i data-lucide="settings"></i> الإعدادات</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content p-6 overflow-y-auto">
+            <div class="view active">
+                <div class="view-header flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold">التقارير</h1>
+                </div>
+                <div class="card p-6 rounded-xl shadow-sm bg-white">
+                    <h2 class="text-lg font-bold mb-4">تنبيهات المخزون</h2>
+                    <div id="reports-low-stock-alerts"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="script.js"></script>
+    <script type="module" src="reports.js"></script>
+</body>
+</html>
