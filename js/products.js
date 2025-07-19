@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const editProductForm = document.getElementById('edit-product-form');
         const searchInput = document.getElementById('product-search-input');
         const openProductModalBtn = document.getElementById('open-product-modal');
+        const toggleLowStockBtn = document.getElementById('toggle-low-stock');
+        let showLowStock = false;
 
         // Populate category selects
         async function populateCategories() {
@@ -36,7 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 alert('فشل تحميل المنتجات. يرجى إعادة تحميل الصفحة.');
                 return;
             }
-            const products = await window.productsDB.getAllProducts(searchTerm);
+            const products = showLowStock
+                ? await window.productsDB.getLowStockProducts()
+                : await window.productsDB.getAllProducts(searchTerm);
             productsTableBody.innerHTML = '';
             if (products.length === 0) {
                 productsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;">لم يتم العثور على منتجات.</td></tr>`;
@@ -44,14 +48,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             products.forEach(p => {
+                // Ensure buyPrice and sellPrice are valid numbers; default to 0 if undefined
+                const buyPrice = typeof p.buyPrice === 'number' ? p.buyPrice : 0;
+                const sellPrice = typeof p.sellPrice === 'number' ? p.sellPrice : 0;
                 const stockLevel = p.stock > 0 ? p.stock / p.minStock : 0;
                 const tagClass = stockLevel === 0 ? 'tag-red' : stockLevel <= 1 ? 'tag-yellow' : 'tag-green';
                 const row = `
                     <tr data-id="${p.id}">
                         <td>${p.name}</td>
                         <td>${p.category}</td>
-                        <td>${p.buyPrice.toFixed(2)} دينار</td>
-                        <td>${p.sellPrice.toFixed(2)} دينار</td>
+                        <td>${buyPrice.toFixed(2)} دينار</td>
+                        <td>${sellPrice.toFixed(2)} دينار</td>
                         <td class="quantity ${tagClass}">${p.stock} ${p.unit}</td>
                         <td>
                             <div class="actions">
@@ -199,6 +206,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Handle open add product modal
         openProductModalBtn.addEventListener('click', () => {
             window.openModal(document.getElementById('add-product-modal'));
+        });
+
+        // Handle toggle low stock button
+        toggleLowStockBtn.addEventListener('click', async () => {
+            showLowStock = !showLowStock;
+            toggleLowStockBtn.textContent = showLowStock ? 'عرض جميع المنتجات' : 'عرض المنتجات المنخفضة';
+            await renderProducts();
         });
 
         // Initialize

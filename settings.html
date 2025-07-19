@@ -37,11 +37,19 @@
                     <h2 class="text-lg font-bold mb-4">إدارة البيانات والإجراءات الخطرة</h2>
                     <p class="help-text mb-4">يمكنك تحميل نسخة احتياطية من بياناتك أو استعادتها من ملف. الرجاء التعامل بحذر.</p>
                     <div class="danger-zone flex gap-4 flex-wrap">
-                        <button class="btn btn-primary">تحميل نسخة احتياطية</button>
+                        <button class="btn btn-primary" data-action="backup">تحميل نسخة احتياطية</button>
                         <button class="btn btn-secondary">رفع ملف بيانات</button>
                         <button class="btn btn-danger">حذف جميع البيانات</button>
                     </div>
                     <p class="help-text-danger">تحذير: حذف جميع البيانات إجراء نهائي لا يمكن التراجع عنه.</p>
+                </div>
+                <div class="card p-6 rounded-xl shadow-sm bg-white mt-6">
+                    <h2 class="text-lg font-bold mb-4">عدد الأيام من اجل اعتبار المنتوج لا يباع</h2>
+                    <p class="help-text mb-4">أدخل عدد الأيام لتخزينه في الإعدادات</p>
+                    <div class="flex gap-4 flex-wrap">
+                        <input type="number" id="daysInput" min="1" class="border border-gray-300 rounded-lg p-2 w-32" placeholder="أدخل عدد الأيام">
+                        <button id="saveDaysBtn" class="btn btn-primary">حفظ الأيام</button>
+                    </div>
                 </div>
             </div>
         </main>

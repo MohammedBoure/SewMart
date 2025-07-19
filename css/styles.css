@@ -1134,7 +1134,7 @@ i {
     }
     
     .view-header {
-        flex-direction: column;
+        flex-direction: center;
         align-items: flex-start;
         gap: 1rem;
     }

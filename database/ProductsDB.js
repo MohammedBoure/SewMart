@@ -110,6 +110,38 @@ class ProductsDB extends Database {
         }
         return 0;
     }
+
+    /**
+     * Retrieves products that have not been sold since a specified date.
+     * @param {string} sinceDate - Date in YYYY-MM-DD format to check for sales since.
+     * @returns {Promise<Object[]>} Array of products that haven't been sold since the specified date.
+     */
+    async getUnsoldProductsSince(sinceDate) {
+        const db = await this.getDB();
+
+        // Validate date format
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(sinceDate)) {
+            throw new Error('تاريخ البداية يجب أن يكون بصيغة YYYY-MM-DD.');
+        }
+
+        const stmt = db.prepare(`
+            SELECT p.id, p.name, p.category, p.stock, p.unit, p.minStock, MAX(s.date) as lastSold
+            FROM products p
+            LEFT JOIN sale_items si ON p.id = si.productId
+            LEFT JOIN sales s ON si.saleId = s.id
+            GROUP BY p.id
+            HAVING MAX(s.date) IS NULL OR MAX(s.date) < ?
+            ORDER BY p.name;
+        `, [sinceDate]);
+
+        const products = [];
+        while (stmt.step()) {
+            products.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return products;
+    }
 }
 
 export default ProductsDB;

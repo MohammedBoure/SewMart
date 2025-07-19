@@ -1,0 +1,329 @@
+/* متغيرات CSS للألوان والقيم */
+:root {
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #06b6d4;
+    
+    --background-main: #f8fafc;
+    --background-card: #ffffff;
+    --background-success: #d1fae5;
+    --background-warning: #fef3c7;
+    --background-info: #dbeafe;
+    
+    --border-light: #e2e8f0;
+    --border-success: #6ee7b7;
+    --border-warning: #fbbf24;
+    --border-info: #93c5fd;
+    
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-success: #065f46;
+    --text-warning: #92400e;
+    --text-info: #1e40af;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 20px;
+    --spacing-xl: 24px;
+}
+/* التنسيق العام لقسم التقارير */
+.reports-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    direction: rtl;
+    font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+/* تنسيق قسم تنبيهات المنتجات غير المباعة */
+#reports-unsold-alerts {
+    background: var(--background-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+#reports-unsold-alerts::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--info-color), var(--success-color));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+/* تنسيق عنوان القسم */
+.reports-section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+.reports-section-title::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(135deg, var(--primary-color), var(--info-color));
+    border-radius: 2px;
+}
+/* تنسيق تنبيهات المنتجات غير المباعة */
+.alert {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--radius-md);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+.alert::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 4px;
+    background: currentColor;
+    opacity: 0.8;
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+.alert:hover::before {
+    transform: scaleY(1);
+}
+/* تنبيهات المنتجات غير المباعة */
+.alert-info.unsold-product {
+    background: linear-gradient(135deg, var(--background-info) 0%, rgba(147, 197, 253, 0.1) 100%);
+    border: 2px solid var(--border-info);
+    color: var(--text-info);
+    transform: translateY(0);
+}
+.alert-info.unsold-product:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-hover);
+}
+/* رسالة النجاح عند عدم وجود منتجات غير مباعة */
+.alert-success {
+    background: linear-gradient(135deg, var(--background-success) 0%, rgba(110, 231, 183, 0.1) 100%);
+    border: 2px solid var(--border-success);
+    color: var(--text-success);
+    animation: successPulse 2s ease-in-out infinite;
+}
+@keyframes successPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: var(--shadow-sm);
+    }
+    50% { 
+        transform: scale(1.02); 
+        box-shadow: var(--shadow-md);
+    }
+}
+/* تنسيق التنبيهات الإضافية */
+.alert-warning {
+    background: linear-gradient(135deg, var(--background-warning) 0%, rgba(251, 191, 36, 0.1) 100%);
+    border: 2px solid var(--border-warning);
+    color: var(--text-warning);
+}
+.alert-danger {
+    background: linear-gradient(135deg, #fee2e2 0%, rgba(252, 165, 165, 0.1) 100%);
+    border: 2px solid #fca5a5;
+    color: #991b1b;
+}
+/* تنسيق الأيقونات */
+.alert i[data-lucide] {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    animation: iconGlow 3s ease-in-out infinite alternate;
+}
+@keyframes iconGlow {
+    from { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1)); }
+    to { filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3)); }
+}
+/* تنسيق النصوص */
+.alert b {
+    font-weight: 600;
+    color: inherit;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.alert-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+/* أزرار الإجراءات */
+.alert-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-right: auto;
+}
+.btn-alert {
+    padding: 6px 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.btn-alert:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+/* إحصائيات سريعة */
+.quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+.stat-card {
+    background: var(--background-card);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: block;
+}
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+/* التنسيق للشاشات الصغيرة */
+@media (max-width: 768px) {
+    .reports-container {
+        padding: var(--spacing-md);
+        background: var(--background-main);
+    }
+    
+    #reports-unsold-alerts {
+        padding: var(--spacing-md);
+        border-radius: var(--radius-md);
+    }
+    .alert {
+        padding: var(--spacing-sm);
+        font-size: 0.875rem;
+        flex-direction: center;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+    .alert i[data-lucide] {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .reports-section-title {
+        font-size: 1.25rem;
+        margin-bottom: var(--spacing-md);
+    }
+    
+    .quick-stats {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+    
+    .alert-actions {
+        margin-right: 0;
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+@media (max-width: 480px) {
+    .reports-container {
+        padding: var(--spacing-sm);
+    }
+    
+    .alert {
+        padding: var(--spacing-sm);
+    }
+    
+    .btn-alert {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+}
+/* تأثيرات إضافية للتفاعل */
+.alert:focus-within {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+/* تنسيق الحالة الفارغة */
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--text-secondary);
+}
+.empty-state-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-md);
+    opacity: 0.5;
+}
+/* تحسينات الطباعة */
+@media print {
+    .reports-container {
+        background: white;
+        box-shadow: none;
+    }
+    
+    .alert {
+        border: 2px solid #000 !important;
+        background: white !important;
+        color: #000 !important;
+        break-inside: avoid;
+    }
+    
+    .alert-actions,
+    .btn-alert {
+        display: none;
+    }
+}

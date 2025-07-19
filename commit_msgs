@@ -84,3 +84,11 @@ refactor(products): remove tag element and apply full-cell coloring for quantity
 - Removed inner .tag element from the quantity cell in products table
 - Applied conditional background color directly to the <td> element
 - Reduced padding and width of the quantity column to minimize space usage
+
+-----
+
+feat(products): add low-stock filter button and unsold days threshold input
+
+- Added a button on the products page to filter and view low-stock products.
+- Introduced an input field to define the number of days after which a product is considered "unsold".
+- Enhanced the reports page to display unsold products with a color gradient from yellow to red, indicating how long each product has remained unsold.

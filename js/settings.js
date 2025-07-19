@@ -1,13 +1,18 @@
 import { initializeApp } from './script.js';
-
+ 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initializeApp();
-
-        const backupBtn = document.querySelector('.btn-primary');
+        const backupBtn = document.querySelector('.danger-zone .btn-primary');
         const restoreBtn = document.querySelector('.btn-secondary');
         const deleteBtn = document.querySelector('.btn-danger');
-
+        const saveDaysBtn = document.querySelector('#saveDaysBtn');
+        const daysInput = document.querySelector('#daysInput');
+        // Load saved days from localStorage
+        const savedDays = localStorage.getItem('workingDays');
+        if (savedDays) {
+            daysInput.value = savedDays;
+        }
         backupBtn.addEventListener('click', () => {
             if (!window.settingsDB) {
                 console.error('SettingsDB not initialized');
@@ -15,7 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             window.settingsDB.backup();
         });
-
         restoreBtn.addEventListener('click', () => {
             if (!window.settingsDB) {
                 console.error('SettingsDB not initialized');
@@ -39,7 +43,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             };  
             input.click();
         });
-
         deleteBtn.addEventListener('click', () => {
             if (!window.settingsDB) {
                 console.error('SettingsDB not initialized');
@@ -51,7 +54,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 window.location.reload();
             }
         });
-
+        saveDaysBtn.addEventListener('click', () => {
+            const days = daysInput.value;
+            if (days && days > 0) {
+                localStorage.setItem('workingDays', days);
+                alert('تم حفظ عدد الأيام بنجاح!');
+            } else {
+                alert('يرجى إدخال عدد أيام صحيح!');
+            }
+        });
         lucide.createIcons();
     } catch (error) {
         console.error('Settings page initialization failed:', error);
