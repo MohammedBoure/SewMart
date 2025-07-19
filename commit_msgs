@@ -76,3 +76,11 @@ feat(ui): improve overall theme and table styles, refine quantity column display
 - Improved button design for hiding sensitive sales information
 - Enhanced general table styling for better spacing and readability
 - Prevented text wrapping in the "quantity" column in the products table
+
+-----
+
+refactor(products): remove tag element and apply full-cell coloring for quantity column
+
+- Removed inner .tag element from the quantity cell in products table
+- Applied conditional background color directly to the <td> element
+- Reduced padding and width of the quantity column to minimize space usage

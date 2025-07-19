@@ -507,7 +507,30 @@ i {
 }
 
 .data-table td.quantity {
-  white-space: nowrap; /* منع الالتفاف في خانة الكمية فقط */
+  white-space: nowrap;
+  font-weight: 600;
+  color: #000; /* لون النص الأساسي */
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 0; /* نزيل الحواف الدائرية */
+}
+
+.data-table td.quantity.tag-green {
+  background-color: #d5f4e6;
+  color: #166534;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.data-table td.quantity.tag-yellow {
+  background-color: #fef7cd;
+  color: #854d0e;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.data-table td.quantity.tag-red {
+  background-color: #fed7d7;
+  color: #991b1b;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
 .data-table tbody tr {
@@ -543,35 +566,6 @@ i {
     color: var(--success-color); 
     font-weight: 700;
     font-family: var(--font-family-mono);
-}
-
-/* Classic Tags */
-.tag { 
-    padding: 0.4rem 1rem; 
-    border-radius: 20px; 
-    font-size: 0.8rem; 
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 2px solid;
-}
-
-.tag-green { 
-    background: linear-gradient(135deg, #d5f4e6 0%, #fef7f0 100%);
-    color: #166534;
-    border-color: #22c55e;
-}
-
-.tag-yellow { 
-    background: linear-gradient(135deg, #fef7cd 0%, #fefce8 100%);
-    color: #854d0e;
-    border-color: #f59e0b;
-}
-
-.tag-red { 
-    background: linear-gradient(135deg, #fed7d7 0%, #fee2e2 100%);
-    color: #991b1b;
-    border-color: #ef4444;
 }
 
 /* Card Headers */

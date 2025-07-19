@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <td>${p.category}</td>
                         <td>${p.buyPrice.toFixed(2)} دينار</td>
                         <td>${p.sellPrice.toFixed(2)} دينار</td>
-                        <td class="quantity"><span class="tag ${tagClass}">${p.stock} ${p.unit}</span></td>
+                        <td class="quantity ${tagClass}">${p.stock} ${p.unit}</td>
                         <td>
                             <div class="actions">
                                 <button class="edit-product" data-id="${p.id}"><i data-lucide="edit"></i></button>
