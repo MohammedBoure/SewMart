@@ -3,10 +3,8 @@ import { initializeApp } from './script.js';
 initSqlJs({
   locateFile: file => `libs/sql.js/${file}`
 }).then(SQL => {
-  // استخدم SQL.Database() هنا
   console.log("SQLite initialized successfully");
 });
-
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -20,27 +18,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const dashboardTotalCapitalSell = document.getElementById('dashboard-total-capital-sell');
         const dashboardRecentSales = document.getElementById('dashboard-recent-sales');
         const dashboardTopProducts = document.getElementById('dashboard-top-products');
-        const profitFilterCategory = document.getElementById('profit-filter-category');
-        const profitFilterPeriod = document.getElementById('profit-filter-period');
         const dashboardProfitByCategory = document.getElementById('dashboard-profit-by-category');
         const dashboardYearlyProfit = document.getElementById('dashboard-yearly-profit');
         const dashboardYearlyChange = document.getElementById('dashboard-yearly-change');
         const dashboardMonthlyChange = document.getElementById('dashboard-monthly-change');
         const dashboardDailyChange = document.getElementById('dashboard-daily-change');
-        
 
-        // Populate category filter
-        async function populateCategories() {
-            const categories = await window.categoriesDB.getAllCategories();
-            profitFilterCategory.innerHTML = '<option value="">جميع الفئات</option>';
-            categories.forEach(category => {
-                profitFilterCategory.insertAdjacentHTML('beforeend', `
-                    <option value="${category}">${category}</option>
-                `);
-            });
-        }
-
-        async function updateDashboard(category = null, period = 'month') {
+        async function updateDashboard() {
             if (!window.productsDB || !window.salesDB || !window.categoriesDB) {
                 console.error('Database not initialized');
                 alert('فشل تحميل لوحة التحكم. يرجى إعادة تحميل الصفحة.');
@@ -73,6 +57,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const todayStr = formatDate(todayDate);
             const yesterdayStr = formatDate(yesterdayDate);
 
+
+
             const todaySalesCount = salesByDay.find(s => s.period === todayStr)?.salesCount || 0;
             const yesterdaySalesCount = salesByDay.find(s => s.period === yesterdayStr)?.salesCount || 0;
 
@@ -81,7 +67,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const dailyChange = yesterdaySalesCount === 0 ? 100 : ((todaySalesCount - yesterdaySalesCount) / yesterdaySalesCount * 100);
             dashboardDailyChange.textContent = `${dailyChange.toFixed(1)}%`;
             dashboardDailyChange.style.color = dailyChange >= 0 ? 'green' : 'red';
-
 
             // Monthly profit
             const monthlyProfits = await window.salesDB.getProfitByMonth();
@@ -97,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .filter(p => p.period === currentMonth)
                 .reduce((sum, p) => sum + p.totalProfit, 0);
             dashboardMonthlyProfit.textContent = `${monthlyProfit.toFixed(2)} دينار`;
-            
+
             const dateNow = new Date();
             const currentYear = dateNow.getFullYear().toString();
             const lastYear = (dateNow.getFullYear() - 1).toString();
@@ -116,7 +101,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             dashboardYearlyChange.textContent = `${yearlyChange.toFixed(1)}%`;
             dashboardYearlyChange.style.color = yearlyChange >= 0 ? 'green' : 'red';
 
-
             const lastMonthDate = new Date();
             lastMonthDate.setMonth(dateNow.getMonth() - 1);
             const lastMonth = lastMonthDate.toISOString().slice(0, 7);
@@ -129,9 +113,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             dashboardMonthlyChange.textContent = `${monthlyChange.toFixed(1)}%`;
             dashboardMonthlyChange.style.color = monthlyChange >= 0 ? 'green' : 'red';
 
-
             // Recent sales
-            const { sales: recentSales } = await window.salesDB.getSales({ page: 1, perPage: 3, startDate: null, endDate: null });
+            const { sales: recentSales } = await window.salesDB.getSales({ page: 1, perPage: 5, startDate: null, endDate: null });
             dashboardRecentSales.innerHTML = '';
             if (recentSales.length === 0) {
                 dashboardRecentSales.innerHTML = '<li class="py-3"><span>لا توجد مبيعات بعد</span></li>';
@@ -163,36 +146,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
-            // Profit by category
-            let profitData;
-            if (period === 'today') {
-                profitData = await window.salesDB.getProfitByDay();
-            } else if (period === 'week') {
-                profitData = await window.salesDB.getProfitByWeek();
-            } else {
-                profitData = await window.salesDB.getProfitByMonth();
-            }
-
+            // Profit by category (show all categories, default to monthly)
+            const profitData = await window.salesDB.getProfitByMonth();
             const { sales } = await window.salesDB.getSales({ page: 1, perPage: 1000, startDate: null, endDate: null });
             const profitByCategory = {};
             for (const sale of sales) {
                 const saleDate = sale.date;
-                let periodKey;
-                if (period === 'today') {
-                    periodKey = saleDate;
-                } else if (period === 'week') {
-                    const date = new Date(saleDate);
-                    const year = date.getFullYear();
-                    const week = Math.floor((date.getDate() - 1) / 7) + 1;
-                    periodKey = `${year}-${week}`;
-                } else {
-                    periodKey = saleDate.slice(0, 7);
-                }
-
+                const periodKey = saleDate.slice(0, 7);
                 if (profitData.some(p => p.period === periodKey)) {
                     for (const item of sale.items) {
                         const product = await window.salesDB.getProductById(item.productId);
-                        if (product && (!category || product.category === category)) {
+                        if (product) {
                             profitByCategory[product.category] = (profitByCategory[product.category] || 0) + 
                                 (item.qty * (product.sellPrice - product.buyPrice));
                         }
@@ -216,22 +180,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
         }
 
-        // Populate categories and update dashboard
-        await populateCategories();
+        // Update dashboard
         await updateDashboard();
-
-        // Event listeners for filters
-        profitFilterCategory.addEventListener('change', async () => {
-            const category = profitFilterCategory.value || null;
-            const period = profitFilterPeriod.value;
-            await updateDashboard(category, period);
-        });
-
-        profitFilterPeriod.addEventListener('change', async () => {
-            const category = profitFilterCategory.value || null;
-            const period = profitFilterPeriod.value;
-            await updateDashboard(category, period);
-        });
     } catch (error) {
         console.error('Dashboard initialization failed:', error);
         alert('حدث خطأ أثناء تحميل لوحة التحكم. يرجى التحقق من الاتصال بالإنترنت وإعادة تحميل الصفحة.');

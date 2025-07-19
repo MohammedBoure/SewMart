@@ -59,3 +59,11 @@ feat(order): add drag-to-select quantity, toggle sensitive info, and initial pro
 - Added a simple drag method to select the quantity of a product in an order
 - Implemented a toggle button to show/hide sensitive information on the sales page
 - Included initial/basic product information for better context
+
+-----
+
+refactor(ui): remove "View by", update theme, and set default start page to sales
+
+- Removed the "View by" section from the main interface
+- Updated the application colors and theme in manifest.json
+- Set the default start page of the app to the sales screen

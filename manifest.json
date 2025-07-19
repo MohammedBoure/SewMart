@@ -2,13 +2,13 @@
   "name": "SewMart - إدارة محل خياطة",
   "short_name": "SewMart",
   "description": "تطبيق متكامل لإدارة محل خياطة وبيع القماش والأدوات. يعمل بدون إنترنت (PWA).",
-  "start_url": "/index.html",
+  "start_url": "/sales.html",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "fullscreen", "window-controls-overlay"],
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#ff69b4",
+  "theme_color": "#403e3f",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let endDate = '';
         let isLoading = false;
         let allSales = [];
-        let isSensitiveInfoVisible = true;
+        let isSensitiveInfoVisible = false;
 
         const salesHistoryBody = document.getElementById('sales-history-body');
         const saleCartItemsContainer = document.getElementById('sale-cart-items');
