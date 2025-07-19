@@ -25,11 +25,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         const saleDetailsModal = document.getElementById('sale-details-modal');
         const saleDetailsContent = document.getElementById('sale-details-content');
         const toggleSensitiveInfoBtn = document.getElementById('toggle-sensitive-info');
+        const addSaleModal = document.getElementById('add-sale-modal');
+
+        function isModalOpen(modal) {
+            // Check if modal is visible (supports both style.display and class-based visibility)
+            return modal.style.display === 'block' || modal.classList.contains('visible') || modal.classList.contains('show');
+        }
 
         function toggleSensitiveInfo() {
             isSensitiveInfoVisible = !isSensitiveInfoVisible;
             const sensitiveElements = document.querySelectorAll('.sensitive-info');
             sensitiveElements.forEach(el => {
+                // Skip summary-total, item-price, and item-total if add-sale-modal is open
+                if ((el === summaryTotalEl.parentElement || el.classList.contains('item-price') || el.classList.contains('item-total')) && isModalOpen(addSaleModal)) {
+                    return;
+                }
                 el.style.display = isSensitiveInfoVisible ? '' : 'none';
             });
             if (toggleSensitiveInfoBtn) {
@@ -37,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 icon.setAttribute('data-lucide', isSensitiveInfoVisible ? 'eye' : 'eye-off');
                 lucide.createIcons();
             }
+            updateSaleSummary();
         }
 
         if (toggleSensitiveInfoBtn) {
@@ -57,8 +68,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <div class="qty-wheel" data-id="${item.id}" data-max="${product.stock}">${item.qty}</div>
                             <span>${product.unit}</span>
                         </div>
-                        <span class="item-price">${product.sellPrice.toFixed(2)} دينار</span>
-                        <strong class="item-total">${(item.qty * product.sellPrice).toFixed(2)} دينار</strong>
+                        <span class="item-price sensitive-info">${product.sellPrice.toFixed(2)} دينار</span>
+                        <strong class="item-total sensitive-info">${(item.qty * product.sellPrice).toFixed(2)} دينار</strong>
                         <button class="item-remove" aria-label="Remove item"><i data-lucide="trash-2"></i></button>
                     </div>`;
                 saleCartItemsContainer.insertAdjacentHTML('beforeend', row);
@@ -66,6 +77,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             await updateSaleSummary();
             lucide.createIcons();
             initializeQtyWheels();
+            // Ensure sensitive info visibility, except for summary-total, item-price, and item-total if modal is open
+            if (!isSensitiveInfoVisible) {
+                document.querySelectorAll('.sensitive-info').forEach(el => {
+                    if ((el === summaryTotalEl.parentElement || el.classList.contains('item-price') || el.classList.contains('item-total')) && isModalOpen(addSaleModal)) {
+                        return;
+                    }
+                    el.style.display = 'none';
+                });
+            }
         }
 
         async function updateSaleSummary() {
@@ -78,10 +98,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             summaryTotalEl.textContent = `${total.toFixed(2)} دينار`;
             summaryProfitEl.textContent = `${profit.toFixed(2)} دينار`;
-            if (!isSensitiveInfoVisible) {
-                summaryTotalEl.parentElement.style.display = 'none';
-                summaryProfitEl.parentElement.style.display = 'none';
-            }
+            // Show summary-total, item-price, and item-total if add-sale-modal is open
+            summaryTotalEl.parentElement.style.display = isModalOpen(addSaleModal) || isSensitiveInfoVisible ? '' : 'none';
+            summaryProfitEl.parentElement.style.display = isSensitiveInfoVisible ? '' : 'none';
+            // Update other sensitive-info elements
+            document.querySelectorAll('.sensitive-info').forEach(el => {
+                if ((el === summaryTotalEl.parentElement || el.classList.contains('item-price') || el.classList.contains('item-total')) && isModalOpen(addSaleModal)) {
+                    return;
+                }
+                el.style.display = isSensitiveInfoVisible ? '' : 'none';
+            });
         }
 
         function initializeQtyWheels() {
@@ -257,6 +283,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await renderSaleCart();
                 await renderSalesHistory();
                 window.closeModal(document.getElementById('add-sale-modal'));
+                // Reapply sensitive info visibility after sale completion
+                if (!isSensitiveInfoVisible) {
+                    document.querySelectorAll('.sensitive-info').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    summaryTotalEl.parentElement.style.display = 'none';
+                    summaryProfitEl.parentElement.style.display = 'none';
+                }
             } catch (error) {
                 console.error('Failed to complete sale:', error);
                 alert(`فشل إتمام البيع: ${error.message}`);
@@ -265,6 +299,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('open-sale-modal-sales').addEventListener('click', () => {
             window.openModal(document.getElementById('add-sale-modal'));
+            // Ensure summary-total, item-price, and item-total are visible when opening the sale modal
+            summaryTotalEl.parentElement.style.display = '';
+            document.querySelectorAll('.item-price, .item-total').forEach(el => {
+                el.style.display = '';
+            });
+            updateSaleSummary();
         });
 
         startDateInput.addEventListener('change', () => {
@@ -326,6 +366,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', () => {
                 window.closeModal(btn.closest('.modal'));
+                // Reapply sensitive info visibility after closing any modal
+                if (!isSensitiveInfoVisible) {
+                    document.querySelectorAll('.sensitive-info').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    summaryTotalEl.parentElement.style.display = 'none';
+                    summaryProfitEl.parentElement.style.display = 'none';
+                }
             });
         });
 

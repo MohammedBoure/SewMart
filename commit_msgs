@@ -92,3 +92,9 @@ feat(products): add low-stock filter button and unsold days threshold input
 - Added a button on the products page to filter and view low-stock products.
 - Introduced an input field to define the number of days after which a product is considered "unsold".
 - Enhanced the reports page to display unsold products with a color gradient from yellow to red, indicating how long each product has remained unsold.
+
+-----
+
+fix(sales): show total product price and total sale amount when hiding sensitive details
+
+- Fixed an issue where total product prices and overall sale amount were not displayed when sensitive details were hidden during the sales process.
