@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const profitFilterCategory = document.getElementById('profit-filter-category');
         const profitFilterPeriod = document.getElementById('profit-filter-period');
         const dashboardProfitByCategory = document.getElementById('dashboard-profit-by-category');
+        const dashboardYearlyProfit = document.getElementById('dashboard-yearly-profit');
+        const dashboardYearlyChange = document.getElementById('dashboard-yearly-change');
+        const dashboardMonthlyChange = document.getElementById('dashboard-monthly-change');
+        const dashboardDailyChange = document.getElementById('dashboard-daily-change');
+        
 
         // Populate category filter
         async function populateCategories() {
@@ -59,19 +64,71 @@ document.addEventListener('DOMContentLoaded', async () => {
             dashboardLowStock.textContent = `${lowStockCount} ${lowStockCount === 1 ? 'منتج' : lowStockCount === 2 ? 'منتجان' : 'منتجات'}`;
 
             // Today's sales
-            const today = new Date().toISOString().split('T')[0];
-            const todaySalesCount = (await window.salesDB.getSalesCountByDay())
-                .filter(s => s.period === today)
-                .reduce((sum, s) => sum + s.salesCount, 0);
+            const salesByDay = await window.salesDB.getSalesCountByDay();
+            const todayDate = new Date();
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(todayDate.getDate() - 1);
+
+            const formatDate = d => d.toISOString().split('T')[0];
+            const todayStr = formatDate(todayDate);
+            const yesterdayStr = formatDate(yesterdayDate);
+
+            const todaySalesCount = salesByDay.find(s => s.period === todayStr)?.salesCount || 0;
+            const yesterdaySalesCount = salesByDay.find(s => s.period === yesterdayStr)?.salesCount || 0;
+
             dashboardTodaySales.textContent = `${todaySalesCount} ${todaySalesCount === 1 ? 'عملية' : todaySalesCount === 2 ? 'عمليتان' : 'عمليات'}`;
+
+            const dailyChange = yesterdaySalesCount === 0 ? 100 : ((todaySalesCount - yesterdaySalesCount) / yesterdaySalesCount * 100);
+            dashboardDailyChange.textContent = `${dailyChange.toFixed(1)}%`;
+            dashboardDailyChange.style.color = dailyChange >= 0 ? 'green' : 'red';
+
 
             // Monthly profit
             const monthlyProfits = await window.salesDB.getProfitByMonth();
+            // Total profit for all years
+            const totalProfitAllYears = monthlyProfits.reduce((sum, p) => sum + p.totalProfit, 0);
+            const dashboardTotalProfitAllYears = document.getElementById('dashboard-total-profit-all-years');
+            if (dashboardTotalProfitAllYears) {
+                dashboardTotalProfitAllYears.textContent = `${totalProfitAllYears.toFixed(2)} دينار`;
+            }
+
             const currentMonth = new Date().toISOString().slice(0, 7);
             const monthlyProfit = monthlyProfits
                 .filter(p => p.period === currentMonth)
                 .reduce((sum, p) => sum + p.totalProfit, 0);
             dashboardMonthlyProfit.textContent = `${monthlyProfit.toFixed(2)} دينار`;
+            
+            const dateNow = new Date();
+            const currentYear = dateNow.getFullYear().toString();
+            const lastYear = (dateNow.getFullYear() - 1).toString();
+
+            const yearlyProfit = monthlyProfits
+                .filter(p => p.period.startsWith(currentYear))
+                .reduce((sum, p) => sum + p.totalProfit, 0);
+
+            const lastYearProfit = monthlyProfits
+                .filter(p => p.period.startsWith(lastYear))
+                .reduce((sum, p) => sum + p.totalProfit, 0);
+
+            dashboardYearlyProfit.textContent = `${yearlyProfit.toFixed(2)} دينار`;
+
+            const yearlyChange = lastYearProfit === 0 ? 100 : ((yearlyProfit - lastYearProfit) / lastYearProfit * 100);
+            dashboardYearlyChange.textContent = `${yearlyChange.toFixed(1)}%`;
+            dashboardYearlyChange.style.color = yearlyChange >= 0 ? 'green' : 'red';
+
+
+            const lastMonthDate = new Date();
+            lastMonthDate.setMonth(dateNow.getMonth() - 1);
+            const lastMonth = lastMonthDate.toISOString().slice(0, 7);
+
+            const lastMonthProfit = monthlyProfits
+                .filter(p => p.period === lastMonth)
+                .reduce((sum, p) => sum + p.totalProfit, 0);
+
+            const monthlyChange = lastMonthProfit === 0 ? 100 : ((monthlyProfit - lastMonthProfit) / lastMonthProfit * 100);
+            dashboardMonthlyChange.textContent = `${monthlyChange.toFixed(1)}%`;
+            dashboardMonthlyChange.style.color = monthlyChange >= 0 ? 'green' : 'red';
+
 
             // Recent sales
             const { sales: recentSales } = await window.salesDB.getSales({ page: 1, perPage: 3, startDate: null, endDate: null });

@@ -52,3 +52,10 @@ remove '/tailwind' and '/' from urlsToCache
 -----
 
 UPDATE TIME THEME IN UI SALES
+-----
+
+feat(order): add drag-to-select quantity, toggle sensitive info, and initial product details
+
+- Added a simple drag method to select the quantity of a product in an order
+- Implemented a toggle button to show/hide sensitive information on the sales page
+- Included initial/basic product information for better context

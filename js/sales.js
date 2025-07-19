@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let endDate = '';
         let isLoading = false;
         let allSales = [];
+        let isSensitiveInfoVisible = true;
 
         const salesHistoryBody = document.getElementById('sales-history-body');
         const saleCartItemsContainer = document.getElementById('sale-cart-items');
@@ -23,6 +24,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         const perPageSelect = document.getElementById('per-page');
         const saleDetailsModal = document.getElementById('sale-details-modal');
         const saleDetailsContent = document.getElementById('sale-details-content');
+        const toggleSensitiveInfoBtn = document.getElementById('toggle-sensitive-info');
+
+        function toggleSensitiveInfo() {
+            isSensitiveInfoVisible = !isSensitiveInfoVisible;
+            const sensitiveElements = document.querySelectorAll('.sensitive-info');
+            sensitiveElements.forEach(el => {
+                el.style.display = isSensitiveInfoVisible ? '' : 'none';
+            });
+            if (toggleSensitiveInfoBtn) {
+                const icon = toggleSensitiveInfoBtn.querySelector('i');
+                icon.setAttribute('data-lucide', isSensitiveInfoVisible ? 'eye' : 'eye-off');
+                lucide.createIcons();
+            }
+        }
+
+        if (toggleSensitiveInfoBtn) {
+            toggleSensitiveInfoBtn.addEventListener('click', toggleSensitiveInfo);
+        } else {
+            console.warn('Toggle button with ID "toggle-sensitive-info" not found in the DOM.');
+        }
 
         async function renderSaleCart() {
             saleCartItemsContainer.innerHTML = '';
@@ -30,9 +51,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const product = await window.salesDB.getProductById(item.id);
                 if (!product) continue;
                 const row = `
-                    <div class="cart-item" data-id="${item.id}">
+                    <div class="sale-cart-item" data-id="${item.id}">
                         <span class="item-name">${product.name}</span>
-                        <div class="item-qty"><input type="number" value="${item.qty}" min="1" max="${product.stock}" class="cart-item-qty-input"><span>${product.unit}</span></div>
+                        <div class="item-qty">
+                            <div class="qty-wheel" data-id="${item.id}" data-max="${product.stock}">${item.qty}</div>
+                            <span>${product.unit}</span>
+                        </div>
                         <span class="item-price">${product.sellPrice.toFixed(2)} دينار</span>
                         <strong class="item-total">${(item.qty * product.sellPrice).toFixed(2)} دينار</strong>
                         <button class="item-remove" aria-label="Remove item"><i data-lucide="trash-2"></i></button>
@@ -41,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             await updateSaleSummary();
             lucide.createIcons();
+            initializeQtyWheels();
         }
 
         async function updateSaleSummary() {
@@ -53,6 +78,65 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             summaryTotalEl.textContent = `${total.toFixed(2)} دينار`;
             summaryProfitEl.textContent = `${profit.toFixed(2)} دينار`;
+            if (!isSensitiveInfoVisible) {
+                summaryTotalEl.parentElement.style.display = 'none';
+                summaryProfitEl.parentElement.style.display = 'none';
+            }
+        }
+
+        function initializeQtyWheels() {
+            const wheels = document.querySelectorAll('.qty-wheel');
+            wheels.forEach(wheel => {
+                let isDragging = false;
+                let startY = 0;
+                let currentQty = parseInt(wheel.textContent) || 1;
+                const maxQty = parseInt(wheel.dataset.max) || 999;
+                const productId = parseInt(wheel.dataset.id);
+
+                const updateQty = async (newQty) => {
+                    newQty = Math.max(1, Math.min(newQty, maxQty));
+                    wheel.textContent = newQty;
+                    const cartItem = saleCart.find(item => item.id === productId);
+                    if (cartItem) {
+                        cartItem.qty = newQty;
+                        const cartItemDiv = wheel.closest('.sale-cart-item');
+                        const product = await window.salesDB.getProductById(productId);
+                        if (product) {
+                            cartItemDiv.querySelector('.item-total').textContent = `${(newQty * product.sellPrice).toFixed(2)} دينار`;
+                        }
+                        await updateSaleSummary();
+                    }
+                };
+
+                wheel.addEventListener('wheel', e => {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? -1 : 1;
+                    currentQty = parseInt(wheel.textContent);
+                    updateQty(currentQty + delta);
+                });
+
+                wheel.addEventListener('touchstart', e => {
+                    isDragging = true;
+                    startY = e.touches[0].clientY;
+                });
+
+                wheel.addEventListener('touchmove', e => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = startY - currentY;
+                    if (Math.abs(deltaY) > 10) {
+                        const delta = deltaY > 0 ? -1 : 1;
+                        currentQty = parseInt(wheel.textContent);
+                        updateQty(currentQty + delta);
+                        startY = currentY;
+                    }
+                });
+
+                wheel.addEventListener('touchend', () => {
+                    isDragging = false;
+                });
+            });
         }
 
         async function renderSalesHistory(append = false) {
@@ -62,12 +146,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             try {
                 const { sales, total } = await window.salesDB.getSales({ page: currentPage, perPage, startDate, endDate });
-                if (!append) allSales = [];
-                allSales = [...allSales, ...sales];
+                if (!append) {
+                    allSales = sales;
+                } else {
+                    allSales = [...sales, ...allSales];
+                }
 
-                // Keep only the most recent 100 sales
                 if (allSales.length > 100) {
-                    allSales = allSales.slice(-100);
+                    allSales = allSales.slice(0, 100);
                 }
 
                 salesHistoryBody.innerHTML = '';
@@ -82,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <tr data-id="${sale.id}">
                             <td>#${sale.id}</td>
                             <td>${sale.date}</td>
-                            <td class="profit">+${sale.totalProfit.toFixed(2)} دينار</td>
+                            <td class="profit sensitive-info">+${sale.totalProfit.toFixed(2)} دينار</td>
                             <td><div class="actions">
                                 <button class="view-details" data-id="${sale.id}"><i data-lucide="file-text"></i> عرض التفاصيل</button>
                             </div></td>
@@ -90,6 +176,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     salesHistoryBody.insertAdjacentHTML('beforeend', row);
                 }
                 lucide.createIcons();
+                if (!isSensitiveInfoVisible) {
+                    document.querySelectorAll('.sensitive-info').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                }
                 isLoading = false;
             } catch (error) {
                 console.error('Failed to fetch sales:', error);
@@ -104,7 +195,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             await renderSalesHistory(true);
         }
 
-        // Lazy loading on scroll
         const tableContainer = document.querySelector('.table-container');
         tableContainer.addEventListener('scroll', () => {
             if (tableContainer.scrollTop + tableContainer.clientHeight >= tableContainer.scrollHeight - 50) {
@@ -150,26 +240,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         saleCartItemsContainer.addEventListener('click', async e => {
             const removeButton = e.target.closest('.item-remove');
             if (removeButton) {
-                saleCart = saleCart.filter(item => item.id !== parseInt(removeButton.closest('.cart-item').dataset.id));
+                saleCart = saleCart.filter(item => item.id !== parseInt(removeButton.closest('.sale-cart-item').dataset.id));
                 await renderSaleCart();
-            }
-        });
-
-        saleCartItemsContainer.addEventListener('input', async e => {
-            const qtyInput = e.target.closest('.cart-item-qty-input');
-            if (qtyInput) {
-                const cartItemDiv = qtyInput.closest('.cart-item');
-                const product = await window.salesDB.getProductById(parseInt(cartItemDiv.dataset.id));
-                if (!product) return;
-                const validatedQty = Math.min(parseInt(qtyInput.value) || 1, product.stock);
-
-                qtyInput.value = validatedQty;
-                const cartItem = saleCart.find(item => item.id === product.id);
-                if (cartItem) {
-                    cartItem.qty = validatedQty;
-                    await updateSaleSummary();
-                    cartItemDiv.querySelector('.item-total').textContent = `${(validatedQty * product.sellPrice).toFixed(2)} دينار`;
-                }
             }
         });
 
@@ -179,9 +251,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             try {
-                await window.salesDB.addSale(saleCart);
+                const newSale = await window.salesDB.addSale(saleCart);
                 saleCart = [];
-                currentPage = 1;
+                allSales = [newSale, ...allSales];
                 await renderSaleCart();
                 await renderSalesHistory();
                 window.closeModal(document.getElementById('add-sale-modal'));
@@ -216,7 +288,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderSalesHistory();
         });
 
-        // View sale details
         salesHistoryBody.addEventListener('click', async (e) => {
             const button = e.target.closest('.view-details');
             if (button) {
@@ -235,10 +306,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                     saleDetailsContent.innerHTML = `
                         <p><strong>رقم المبيعة:</strong> #${details.saleId}</p>
                         <p><strong>التاريخ:</strong> ${sale.date}</p>
-                        <p><strong>إجمالي المبلغ:</strong> ${details.totalPrice.toFixed(2)} دينار</p>
-                        <p><strong>إجمالي الربح:</strong> ${details.totalProfit.toFixed(2)} دينار</p>
+                        <p class="sensitive-info"><strong>إجمالي المبلغ:</strong> ${details.totalPrice.toFixed(2)} دينار</p>
+                        <p class="sensitive-info"><strong>إجمالي الربح:</strong> ${details.totalProfit.toFixed(2)} دينار</p>
                         <p><strong>المنتجات:</strong></p>
                         <ul>${productDetails.join('')}</ul>`;
+                    if (!isSensitiveInfoVisible) {
+                        saleDetailsContent.querySelectorAll('.sensitive-info').forEach(el => {
+                            el.style.display = 'none';
+                        });
+                    }
                     window.openModal(saleDetailsModal);
                 } catch (error) {
                     console.error('Failed to fetch sale details:', error);
@@ -247,7 +323,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Close modals
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', () => {
                 window.closeModal(btn.closest('.modal'));

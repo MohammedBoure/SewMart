@@ -2,13 +2,13 @@ import Database from './Database.js';
 
 class SalesDB extends Database {
     /**
-     * Retrieves all sales with their items, ordered by date descending.
+     * Retrieves all sales with their items, ordered by date descending, then id descending.
      * @returns {Promise<Object[]>} Array of sales with their items.
      */
     async getAllSales() {
         const db = await this.getDB();
         const sales = [];
-        const stmt = db.prepare(`SELECT * FROM sales ORDER BY date DESC;`);
+        const stmt = db.prepare(`SELECT * FROM sales ORDER BY date DESC, id DESC;`);
         while (stmt.step()) {
             const sale = stmt.getAsObject();
             const itemsStmt = db.prepare(`
@@ -89,7 +89,7 @@ class SalesDB extends Database {
         const salesStmt = db.prepare(`
             SELECT * FROM sales 
             ${whereClause}
-            ORDER BY date DESC 
+            ORDER BY date DESC, id DESC 
             LIMIT ? OFFSET ?;
         `, [...params, perPage, offset]);
         while (salesStmt.step()) {
@@ -127,16 +127,22 @@ class SalesDB extends Database {
             stmt.free();
             return result;
         };
-        
+
+        // Calculate total profit
         const totalProfit = saleCart.reduce((sum, item) => {
             const product = getProductByIdSync(item.id);
             if (!product) return sum;
             return sum + (item.qty * (product.sellPrice - product.buyPrice));
         }, 0);
 
-        const saleId = Date.now();
+        // Get the highest sale ID and increment it by 1
+        const maxIdStmt = db.prepare(`SELECT MAX(id) AS maxId FROM sales;`);
+        const maxIdResult = maxIdStmt.step() ? maxIdStmt.getAsObject() : { maxId: 0 };
+        maxIdStmt.free();
+        const saleId = maxIdResult.maxId ? maxIdResult.maxId + 1 : 1;
+
         const date = new Date().toISOString().split('T')[0];
-        
+
         db.run(`INSERT INTO sales (id, date, totalProfit) VALUES (?, ?, ?);`, [saleId, date, totalProfit]);
 
         for (const item of saleCart) {
@@ -261,7 +267,7 @@ class SalesDB extends Database {
     async getSaleDetails(saleId) {
         const db = await this.getDB();
         
-        // Get total profit directly from sales table
+        // Get total profit and items directly from sales and sale_items
         const saleStmt = db.prepare('SELECT totalProfit FROM sales WHERE id = ?;', [saleId]);
         const saleResult = saleStmt.step() ? saleStmt.getAsObject() : null;
         saleStmt.free();
@@ -270,20 +276,26 @@ class SalesDB extends Database {
             return null; // Sale not found
         }
 
-        // Calculate total selling price
         const itemsStmt = db.prepare(`
-            SELECT SUM(p.sellPrice * si.qty) as totalPrice
+            SELECT si.productId, si.qty, p.name, p.sellPrice
             FROM sale_items si
             JOIN products p ON si.productId = p.id
             WHERE si.saleId = ?;
         `, [saleId]);
-        const itemsResult = itemsStmt.step() ? itemsStmt.getAsObject() : { totalPrice: 0 };
+        const items = [];
+        let totalPrice = 0;
+        while (itemsStmt.step()) {
+            const item = itemsStmt.getAsObject();
+            items.push(item);
+            totalPrice += item.qty * item.sellPrice;
+        }
         itemsStmt.free();
 
         return {
             saleId: saleId,
-            totalPrice: itemsResult.totalPrice,
-            totalProfit: saleResult.totalProfit
+            totalPrice: totalPrice,
+            totalProfit: saleResult.totalProfit,
+            items: items
         };
     }
 }
