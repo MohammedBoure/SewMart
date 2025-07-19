@@ -52,11 +52,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <td>${p.category}</td>
                         <td>${p.buyPrice.toFixed(2)} دينار</td>
                         <td>${p.sellPrice.toFixed(2)} دينار</td>
-                        <td><span class="tag ${tagClass}">${p.stock} ${p.unit}</span></td>
-                        <td><div class="actions">
-                            <button class="edit-product" data-id="${p.id}"><i data-lucide="edit"></i></button>
-                            <button class="delete-product" data-id="${p.id}"><i data-lucide="trash-2"></i></button>
-                        </div></td>
+                        <td class="quantity"><span class="tag ${tagClass}">${p.stock} ${p.unit}</span></td>
+                        <td>
+                            <div class="actions">
+                                <button class="edit-product" data-id="${p.id}"><i data-lucide="edit"></i></button>
+                                <button class="delete-product" data-id="${p.id}"><i data-lucide="trash-2"></i></button>
+                            </div>
+                        </td>
                     </tr>`;
                 productsTableBody.insertAdjacentHTML('beforeend', row);
             });

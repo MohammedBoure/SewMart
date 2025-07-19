@@ -65,6 +65,43 @@
         .item-remove:hover {
             color: #c0392b;
         }
+        .filter-bar {
+            display: flex;
+            gap: 20px; /* مسافة بين الحقول */
+            flex-wrap: wrap;
+            align-items: center;
+            background-color: #f9f9f9; /* خلفية خفيفة */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+            }
+
+            .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+            }
+
+            .form-group input,
+            .form-group select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            }
+
+            .form-group input:focus,
+            .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+            }
+
     </style>
 </head>
 <body>
@@ -91,7 +128,7 @@
                     <h1>سجل المبيعات</h1>
                     <div class="view-controls">
                         <button id="open-sale-modal-sales" class="btn btn-primary"><i data-lucide="plus"></i> بيع جديد</button>
-                        <button id="toggle-sensitive-info" class="btn btn-secondary"><i data-lucide="eye"></i> إظهار/إخفاء المعلومات الحساسة</button>
+                        <button id="toggle-sensitive-info" class="btn btn-secondary"><i data-lucide="eye"></i></button>
                     </div>
                 </div>
                 <div class="filter-bar">

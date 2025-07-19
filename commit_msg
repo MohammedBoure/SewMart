@@ -1,5 +1,6 @@
-refactor(ui): remove "View by", update theme, and set default start page to sales
+feat(ui): improve overall theme and table styles, refine quantity column display
 
-- Removed the "View by" section from the main interface
-- Updated the application colors and theme in manifest.json
-- Set the default start page of the app to the sales screen
+- Updated site theme to a more classic and clean style
+- Improved button design for hiding sensitive sales information
+- Enhanced general table styling for better spacing and readability
+- Prevented text wrapping in the "quantity" column in the products table
